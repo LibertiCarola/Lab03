@@ -1,4 +1,5 @@
 from deposito_strumenti import DepositoStrumenti
+from strumenti import Strumenti
 from datetime import datetime
 
 def menu():
@@ -20,7 +21,8 @@ def main():
 
         if scelta == "1":
             nuovo_responsabile = input("Inserisci il nuovo responsabile: ")
-            # TODO: Aggiorna responsabile nel sistema
+            deposito.responsabile = nuovo_responsabile
+            print(f"il nuovo responsabile del '{deposito.nome}' è {deposito.responsabile}")
 
         elif scelta == "2":
             while True:
@@ -41,30 +43,33 @@ def main():
                 print("Errore: inserire valori numerici validi per anno e valore.")
                 continue
             strumento = deposito.aggiungi_strumento(tipo, marca, anno_acquisto, valore)
-            print(f"Strumento aggiunto: {strumento}")
+            print('Strumento aggiunto: ')
+            Strumenti.stampati(Strumenti, strumento)
+            #print(f"Strumento aggiunto: {strumento}")
 
-        elif scelta == "4":
+        elif scelta == "4": # sistema controllo maiuscola
             strumenti_ordinati = deposito.strumenti_ordinati_per_marca()
             for s in strumenti_ordinati:
                 print(f'- {s}')
 
         elif scelta == "5":
             id_strumento = input("ID strumento: ")
+            # CONTROLLLO VALIDITà CODICE
             cognome_allievo = input("Cognome allievo: ")
             data = datetime.now().date()
             try:
                 prestito = deposito.nuovo_prestito(data, id_strumento, cognome_allievo)
-                print(f"Prestito andato a buon fine: {prestito}")
+                print(prestito)
             except Exception as e:
-                print(e)
+                print(e, '\nLo strumento non risulta registrato in deposito')
 
         elif scelta == "6":
             id_prestito = input("ID prestito da terminare: ")
             try:
-                deposito.termina_prestito(id_prestito)
-                print(f"Prestito {id_prestito} terminato con successo.")
+                strumento_restituito = deposito.termina_prestito(id_prestito)
+                print(f"Hai restituito lo strumento {strumento_restituito}")
             except Exception as e:
-                print(e)
+                print(e, '\n Si è verificato un errore, riprova')
 
         elif scelta == "7":
             print("Uscita dal programma...")
