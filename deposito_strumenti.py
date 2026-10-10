@@ -1,5 +1,4 @@
 from strumenti import Strumenti
-from operator import attrgetter
 
 class DepositoStrumenti:
     def __init__(self, nome, responsabile):
@@ -18,30 +17,36 @@ class DepositoStrumenti:
         # print(path)
         nome_file = path[-1]
         file = open(f'{nome_file}', 'r')
-        # rimuovere intestazione
-        # file.readline()
-        # lettura file
         for line in file:
             line = line.rstrip()
-            riga = line.split(',') # ottengo una lista con tutte le informazioni dello strumento in ordine
+            riga = line.split(',')           # ottengo una lista con tutte le informazioni dello strumento in ordine
                                              # codice,  tipo,    marca,  anno_acquisto, valore
             self.deposito[riga[0]] = Strumenti(riga[0], riga[1], riga[2], riga[3], riga[4])                             # stiamo salvando ciascun oggetto nel dizionario con il codice come chiave
         self.counter = len(self.deposito)
         print('file caricato correttamente')
-        return self.deposito, self.counter # aggiornamento elementi globali
+        # return self.deposito, self.counter   # non è necessario aggiornare gli elementi globali quando usi self.___
 
     def aggiungi_strumento(self, tipo, marca, anno_acquisto, valore):
         """Aggiunge uno strumento nel deposito: aggiunge solo nel sistema e non aggiorna il file"""
         self.counter = self.counter + 1
-        codice = 'S' + str(self.counter)                                                                                # deposito
-        strum = Strumenti(codice, tipo, marca, anno_acquisto, valore)                                                   # [CodS][CodS, tipo, marca, anno_acquisto, valore, prestito]
+        codice = 'S' + str(self.counter)
+        # correzione del testo
+        m = marca[0:1]
+        M = m.upper()
+        Marca = M + marca[1:]
+
+        t = tipo[0:1]
+        T = t.upper()
+        Tipo = T + tipo[1:]
+                                                                                                                        # deposito
+        strum = Strumenti(codice, Tipo, Marca, anno_acquisto, valore)                                                   # [CodS][CodS, tipo, marca, anno_acquisto, valore, prestito]
         self.deposito[codice] = strum
         return strum
 
 
     def strumenti_ordinati_per_marca(self):
         """Ordina gli strumenti per marca in ordine alfabetico"""           # dep è una tupla (chiave,lista)
-        codice_strumenti_ordinati = dict(sorted(self.deposito.items(), key=lambda dep: (dep[1].marca, dep[1].tipo)))                 # !!! condizioni ordinamento
+        codice_strumenti_ordinati = dict(sorted(self.deposito.items(), key=lambda dep: (dep[1].marca, dep[1].tipo)))    # condizioni ordinamento
         strumenti_ordinati = []
         for cod in codice_strumenti_ordinati:
             c = self.deposito[cod]
@@ -54,9 +59,9 @@ class DepositoStrumenti:
         CodS = self.deposito[id_strumento]
         if not CodS.prestito:
         # aggiornamento counter CodP
-            self.CountP = self.CountP + 1                                                                                   # registro_prestiti
+            self.CountP = self.CountP + 1                                                                               # registro_prestiti
             CodP = 'P' + str(self.CountP)
-            prest = [CodP, data, CodS.codice, CodS.tipo, cognome_allievo]                               # [CodP][CodP, data, CodS, tipo, cognome]
+            prest = [CodP, data, CodS.codice, CodS.tipo, cognome_allievo]                                               # [CodP][CodP, data, CodS, tipo, cognome]
             self.registro_prestiti[CodP] = prest
         # aggiornamento status strumento
             CodS.prestito = True
@@ -64,18 +69,25 @@ class DepositoStrumenti:
             return prest
         else:
             print('Lo strumento è già stato preso in prestito')
-            return None
 
-
-    def termina_prestito(self, id_prestito): #id_prestito è una stringa, deve diventare una classe
+    def termina_prestito(self, id_prestito): #id_prestito è una stringa
         """Termina un prestito in atto"""
         if id_prestito in self.registro_prestiti:
-            CodP = self.registro_prestiti[id_prestito][0] #CodP
-            CodS = self.registro_prestiti[CodP][2]  # stringa di lista
+            CodP = self.registro_prestiti[id_prestito][0]       #CodP
+            CodS = self.registro_prestiti[CodP][2]              #stringa di lista
             classe_strumento = self.deposito[CodS]
             classe_strumento.prestito = False
             print(f'Conclusione prestito {CodP} avenuta correttamente')
             return (CodS, classe_strumento.tipo)
-        else:
-            return None
 
+    def check_cod(self, cod):
+        c = False
+        while not c: #chiedi finché il codice non è valido (finché non è vero)
+            if cod in self.deposito:
+                c = True
+                return cod
+            elif cod in self.registro_prestiti:
+                c = True
+                return cod
+            else:
+                cod = input("ID non trovato \nInserire un codice valido: ")

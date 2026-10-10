@@ -44,29 +44,32 @@ def main():
                 continue
             strumento = deposito.aggiungi_strumento(tipo, marca, anno_acquisto, valore)
             print('Strumento aggiunto: ')
-            Strumenti.stampati(Strumenti, strumento)
+            strumento.stampati()                                                                                        # stiamo richiamando il metodo 'stampati' di Strumenti sull'oggetto strumento
+            # print(strumento)                                                                                          # sono due formule equivalenti, questa si riferisce a __str__ in strumenti.py
+
             #print(f"Strumento aggiunto: {strumento}")
 
-        elif scelta == "4": # sistema controllo maiuscola
+        elif scelta == "4":
             strumenti_ordinati = deposito.strumenti_ordinati_per_marca()
             for s in strumenti_ordinati:
                 print(f'- {s}')
 
         elif scelta == "5":
             id_strumento = input("ID strumento: ")
-            # CONTROLLLO VALIDITà CODICE
+            codiceS = deposito.check_cod(id_strumento)                                                                  # controllo validità codice
             cognome_allievo = input("Cognome allievo: ")
             data = datetime.now().date()
             try:
-                prestito = deposito.nuovo_prestito(data, id_strumento, cognome_allievo)
+                prestito = deposito.nuovo_prestito(data, codiceS, cognome_allievo)
                 print(prestito)
             except Exception as e:
-                print(e, '\nLo strumento non risulta registrato in deposito')
+                print(e)
 
         elif scelta == "6":
             id_prestito = input("ID prestito da terminare: ")
+            codiceP = deposito.check_cod(id_prestito)                                                                   # controllo validità codice
             try:
-                strumento_restituito = deposito.termina_prestito(id_prestito)
+                strumento_restituito = deposito.termina_prestito(codiceP)
                 print(f"Hai restituito lo strumento {strumento_restituito}")
             except Exception as e:
                 print(e, '\n Si è verificato un errore, riprova')

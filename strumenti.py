@@ -7,5 +7,8 @@ class Strumenti:
         self.valore = valore
         self.prestito = False
 
-    def stampati(self, s):
-        print(f'{s.codice}, {s.tipo}, {s.marca}, {s.anno_acquisto}, {s.valore}')
+    def stampati(self):
+        print(f'{self.codice}, {self.tipo}, {self.marca}, {self.anno_acquisto}, {self.valore}')
+
+    def __str__(self):
+        return f"{self.codice}, {self.tipo}, {self.marca}, {self.anno_acquisto}, {self.valore}"
